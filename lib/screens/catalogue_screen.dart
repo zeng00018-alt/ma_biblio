@@ -1,12 +1,17 @@
 import 'package:flutter/material.dart';
+import '../widgets/livre_card.dart'; // Importe ton widget LivreCard
+import 'detail_screen.dart'; // Importe l'écran de détail
 
-// Modèle Livre mis à jour avec la propriété 'nouveaute'
+// Modèle de données Livre complet
 class Livre {
   final String titre;
   final String auteur;
   final int annee;
   final Color couleur;
   final double note;
+  final String genre;
+  bool lu;
+  bool favori;
   final bool nouveaute;
 
   Livre({
@@ -15,55 +20,39 @@ class Livre {
     required this.annee,
     required this.couleur,
     required this.note,
+    required this.genre,
+    this.lu = false,
+    this.favori = false,
     this.nouveaute = false,
   });
 }
 
-class CatalogueScreen extends StatelessWidget {
-  CatalogueScreen({Key? key}) : super(key: key);
+class CatalogueScreen extends StatefulWidget {
+  const CatalogueScreen({Key? key}) : super(key: key);
 
+  @override
+  State<CatalogueScreen> createState() => _CatalogueScreenState();
+}
+
+class _CatalogueScreenState extends State<CatalogueScreen> {
   // Liste complète de livres pour le test
   final List<Livre> livres = [
-    Livre(titre: 'Flutter pour les nuls', auteur: 'Jean Dupont', annee: 2021, couleur: Colors.blue, note: 4.5, nouveaute: true),
-    Livre(titre: 'Apprendre Dart', auteur: 'Marie Curie', annee: 2019, couleur: Colors.green, note: 4.8, nouveaute: false),
-    Livre(titre: 'Clean Code', auteur: 'Robert Martin', annee: 2008, couleur: Colors.orange, note: 4.9, nouveaute: true),
-    Livre(titre: 'Design Patterns', auteur: 'Erich Gamma', annee: 1994, couleur: Colors.purple, note: 4.7, nouveaute: false),
-    Livre(titre: 'Refactoring', auteur: 'Martin Fowler', annee: 1999, couleur: Colors.red, note: 4.6, nouveaute: true),
+    Livre(titre: 'Flutter pour les nuls', auteur: 'Jean Dupont', annee: 2021, couleur: Colors.blue, note: 4.5, genre: 'Informatique', nouveaute: true),
+    Livre(titre: 'Apprendre Dart', auteur: 'Marie Curie', annee: 2019, couleur: Colors.green, note: 4.8, genre: 'Informatique', nouveaute: false),
+    Livre(titre: 'Clean Code', auteur: 'Robert Martin', annee: 2008, couleur: Colors.orange, note: 4.9, genre: 'Informatique', nouveaute: true),
+    Livre(titre: 'Design Patterns', auteur: 'Erich Gamma', annee: 1994, couleur: Colors.purple, note: 4.7, genre: 'Roman', nouveaute: false),
+    Livre(titre: 'Refactoring', auteur: 'Martin Fowler', annee: 1999, couleur: Colors.red, note: 4.6, genre: 'Histoire', nouveaute: true),
   ];
-
-  // Fonction livreTile (Q1.7 réutilisée)
-  Widget livreTile(Livre livre) {
-    return ListTile(
-      leading: CircleAvatar(
-        backgroundColor: livre.couleur,
-        child: Text(
-          livre.titre.isNotEmpty ? livre.titre[0] : '?',
-          style: const TextStyle(color: Colors.white),
-        ),
-      ),
-      title: Text(livre.titre),
-      subtitle: Text('${livre.auteur} – ${livre.annee}'),
-      trailing: Row(
-        mainAxisSize: MainAxisSize.min,
-        children: [
-          Text('${livre.note}'),
-          const SizedBox(width: 4),
-          const Icon(Icons.star, color: Colors.amber, size: 20),
-        ],
-      ),
-    );
-  }
 
   @override
   Widget build(BuildContext context) {
-    // Q2.7 : Filtrer les livres qui sont des nouveautés
+    // Filtrage des livres qui sont des nouveautés pour la liste horizontale
     final livresNouveautes = livres.where((l) => l.nouveaute).toList();
 
     return Scaffold(
       appBar: AppBar(
         title: const Text('Catalogue des livres'),
       ),
-      // Q2.8 : Organisation avec une Column
       body: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
@@ -75,7 +64,7 @@ class CatalogueScreen extends StatelessWidget {
             ),
           ),
           
-          // Q2.7 & Q2.8 : ListView horizontal de 160 px de haut dans un SizedBox
+          // ListView horizontal des nouveautés
           SizedBox(
             height: 160,
             child: ListView.builder(
@@ -114,15 +103,27 @@ class CatalogueScreen extends StatelessWidget {
             ),
           ),
 
-          // Q2.6, Q2.8 : ListView.separated vertical dans un Expanded pour éviter l'erreur de contrainte
+          // Q4.4 & Q4.7 : ListView.builder vertical avec LivreCard et gestion du clic (Navigator.push)
           Expanded(
-            child: ListView.separated(
+            child: ListView.builder(
               itemCount: livres.length,
-              separatorBuilder: (context, index) => const Divider(
-                indent: 72, // Q2.6 : Divider indenté pour s'aligner après le leading
-              ),
               itemBuilder: (context, index) {
-                return livreTile(livres[index]);
+                final livre = livres[index];
+                return LivreCard(
+                  livre: livre,
+                  onTap: () {
+                    // Q4.7 : Navigation vers l'écran de détail
+                    Navigator.push(
+                      context,
+                      MaterialPageRoute(
+                        builder: (context) => DetailScreen(livre: livre),
+                      ),
+                    ).then((_) {
+                      // Rafraîchir l'état du catalogue au retour si un livre a été modifié
+                      setState(() {});
+                    });
+                  },
+                );
               },
             ),
           ),
