@@ -4,10 +4,10 @@ class Livre {
   final int id;
   final String titre;
   final String auteur;
-  final String genre;   // Roman, Science, Histoire, Jeunesse, Informatique
+  final String genre;
   final int annee;
-  final double note;    // sur 5
-  final Color couleur;  // couleur de la « couverture »
+  final double note;
+  final Color couleur;
   final bool nouveaute;
   bool lu;
   bool favori;
@@ -24,4 +24,45 @@ class Livre {
     this.lu = false,
     this.favori = false,
   });
+
+  // Q7.3 : Constructeur factory Livre.fromJson
+  factory Livre.fromJson(Map<String, dynamic> json) {
+    // Conversion de la couleur hexadécimale "#0288D1" en Color(0xFF0288D1)
+    String hexColor = json['couleur'] ?? '#9E9E9E';
+    hexColor = hexColor.replaceAll('#', '');
+    if (hexColor.length == 6) {
+      hexColor = 'FF$hexColor';
+    }
+    Color parsedColor = Color(int.parse(hexColor, radix: 16));
+
+    return Livre(
+      id: json['id'] ?? 0,
+      titre: json['titre'] ?? '',
+      auteur: json['auteur'] ?? '',
+      genre: json['genre'] ?? '',
+      annee: json['annee'] ?? 2000,
+      // Gère le cas où la note est un int ou un double
+      note: (json['note'] as num?)?.toDouble() ?? 0.0,
+      couleur: parsedColor,
+      nouveaute: json['nouveaute'] ?? false,
+      lu: json['lu'] ?? false,
+      favori: json['favori'] ?? false,
+    );
+  }
+
+  // Q7.3 : Méthode toJson pour la sauvegarde
+  Map<String, dynamic> toJson() {
+    return {
+      'id': id,
+      'titre': titre,
+      'auteur': auteur,
+      'genre': genre,
+      'annee': annee,
+      'note': note,
+      'couleur': '#${couleur.value.toRadixString(16).padLeft(8, '0').substring(2).toUpperCase()}',
+      'nouveaute': nouveaute,
+      'lu': lu,
+      'favori': favori,
+    };
+  }
 }
