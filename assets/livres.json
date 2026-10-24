@@ -1,0 +1,62 @@
+[
+  {
+    "id": 1,
+    "titre": "Flutter pour les nuls",
+    "auteur": "Jean Dupont",
+    "genre": "Informatique",
+    "annee": 2021,
+    "note": 4.5,
+    "couleur": "#2196F3",
+    "nouveaute": true,
+    "lu": false,
+    "favori": true
+  },
+  {
+    "id": 2,
+    "titre": "Apprendre Dart",
+    "auteur": "Marie Curie",
+    "genre": "Informatique",
+    "annee": 2019,
+    "note": 4.8,
+    "couleur": "#4CAF50",
+    "nouveaute": false,
+    "lu": false,
+    "favori": false
+  },
+  {
+    "id": 3,
+    "titre": "Clean Code",
+    "auteur": "Robert Martin",
+    "genre": "Informatique",
+    "annee": 2008,
+    "note": 4.9,
+    "couleur": "#FF9800",
+    "nouveaute": true,
+    "lu": false,
+    "favori": true
+  },
+  {
+    "id": 4,
+    "titre": "Design Patterns",
+    "auteur": "Erich Gamma",
+    "genre": "Roman",
+    "annee": 1994,
+    "note": 4.7,
+    "couleur": "#9C27B0",
+    "nouveaute": false,
+    "lu": false,
+    "favori": false
+  },
+  {
+    "id": 5,
+    "titre": "Refactoring",
+    "auteur": "Martin Fowler",
+    "genre": "Histoire",
+    "annee": 1999,
+    "note": 4.6,
+    "couleur": "#F44336",
+    "nouveaute": true,
+    "lu": false,
+    "favori": false
+  }
+]

@@ -1,8 +1,12 @@
 import 'package:flutter/material.dart';
-import 'screens/parametres_screen.dart';
-import 'screens/catalogue_screen.dart'; // Assure-toi que le chemin correspond
 import 'services/livre_service.dart';
-import 'models/livre.dart'; // Si ton modèle Livre est dans un fichier séparé models/livre.dart
+import 'models/livre.dart'; // <-- Ton vrai modèle de référence
+
+// On cache 'Livre' de ces imports pour éviter le conflit d'ambiguïté
+import 'screens/catalogue_screen.dart' hide Livre;
+import 'screens/galerie_screen.dart';
+import 'screens/ma_liste_screen.dart' hide Livre;
+import 'screens/parametres_screen.dart';
 
 void main() {
   runApp(const MonApplicationTp());
@@ -14,9 +18,10 @@ class MonApplicationTp extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return MaterialApp(
-      title: 'TP Flutter',
+      title: 'MaBiblio TP Flutter',
       theme: ThemeData(
         primarySwatch: Colors.blue,
+        useMaterial3: true,
       ),
       home: const HomePage(),
       debugShowCheckedModeBanner: false,
@@ -33,12 +38,18 @@ class HomePage extends StatefulWidget {
 
 class _HomePageState extends State<HomePage> {
   late Future<List<Livre>> _futurLivres;
+  int _currentIndex = 0; // Q8.1 : Index de l'onglet actif
 
   @override
   void initState() {
     super.initState();
-    // Q7.5 : Chargement des livres au démarrage
-    _futurLivres = LivreService.chargerLivres();
+    _chargerDonnees();
+  }
+
+  void _chargerDonnees() {
+    setState(() {
+      _futurLivres = LivreService.chargerLivres();
+    });
   }
 
   @override
@@ -49,14 +60,14 @@ class _HomePageState extends State<HomePage> {
         // Pendant le chargement
         if (snapshot.connectionState == ConnectionState.waiting) {
           return Scaffold(
-            appBar: AppBar(title: const Text('Ma Bibliothèque')),
+            appBar: AppBar(title: const Text('MaBiblio')),
             body: const Center(child: CircularProgressIndicator()),
           );
         }
         // En cas d'erreur
         else if (snapshot.hasError) {
           return Scaffold(
-            appBar: AppBar(title: const Text('Ma Bibliothèque')),
+            appBar: AppBar(title: const Text('MaBiblio')),
             body: Center(
               child: Text(
                 'Erreur : ${snapshot.error}',
@@ -68,11 +79,17 @@ class _HomePageState extends State<HomePage> {
         }
         // Une fois les données reçues
         else {
-          final livres = snapshot.data ?? [];
+          // Q8.2 : Liste des écrans de l'application
+          // Note : On appelle les constructeurs standards de tes écrans
+          final List<Widget> _ecrans = [
+            const CatalogueScreen(),
+            const GalerieScreen(),
+            const MaListeScreen(),
+          ];
 
           return Scaffold(
             appBar: AppBar(
-              title: const Text('Ma Bibliothèque - TP'),
+              title: const Text('MaBiblio - TP Flutter'),
               actions: [
                 IconButton(
                   icon: const Icon(Icons.settings),
@@ -83,52 +100,35 @@ class _HomePageState extends State<HomePage> {
                         builder: (context) => const ParametresScreen(),
                       ),
                     ).then((_) {
-                      // Recharger si on revient des paramètres (ex: réinitialisation)
-                      setState(() {
-                        _futurLivres = LivreService.chargerLivres();
-                      });
+                      // Recharge les données au retour des paramètres (ex: réinitialisation)
+                      _chargerDonnees();
                     });
                   },
                 ),
               ],
             ),
-            body: Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                Padding(
-                  padding: const EdgeInsets.all(16.0),
-                  child: Text(
-                    'Catalogue chargé depuis le JSON (${livres.length} livres) :',
-                    style: const TextStyle(fontSize: 16, fontWeight: FontWeight.bold),
-                  ),
+            // Q8.2 : Affichage de l'écran actif
+            body: _ecrans[_currentIndex],
+            // Q8.1 : BottomNavigationBar à trois onglets
+            bottomNavigationBar: BottomNavigationBar(
+              currentIndex: _currentIndex,
+              onTap: (index) {
+                setState(() {
+                  _currentIndex = index;
+                });
+              },
+              items: const [
+                BottomNavigationBarItem(
+                  icon: Icon(Icons.list),
+                  label: 'Catalogue',
                 ),
-                // Affichage de la liste des livres chargés depuis le JSON
-                Expanded(
-                  child: ListView.builder(
-                    itemCount: livres.length,
-                    itemBuilder: (context, index) {
-                      final livre = livres[index];
-                      return ListTile(
-                        leading: CircleAvatar(
-                          backgroundColor: livre.couleur,
-                          child: Text(
-                            livre.titre.isNotEmpty ? livre.titre[0] : '?',
-                            style: const TextStyle(color: Colors.white),
-                          ),
-                        ),
-                        title: Text(livre.titre),
-                        subtitle: Text('${livre.auteur} – ${livre.annee}'),
-                        trailing: Row(
-                          mainAxisSize: MainAxisSize.min,
-                          children: [
-                            Text('${livre.note}'),
-                            const SizedBox(width: 4),
-                            const Icon(Icons.star, color: Colors.amber, size: 20),
-                          ],
-                        ),
-                      );
-                    },
-                  ),
+                BottomNavigationBarItem(
+                  icon: Icon(Icons.grid_on),
+                  label: 'Galerie',
+                ),
+                BottomNavigationBarItem(
+                  icon: Icon(Icons.checklist),
+                  label: 'Ma liste',
                 ),
               ],
             ),

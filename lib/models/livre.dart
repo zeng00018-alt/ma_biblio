@@ -27,7 +27,6 @@ class Livre {
 
   // Q7.3 : Constructeur factory Livre.fromJson
   factory Livre.fromJson(Map<String, dynamic> json) {
-    // Conversion de la couleur hexadécimale "#0288D1" en Color(0xFF0288D1)
     String hexColor = json['couleur'] ?? '#9E9E9E';
     hexColor = hexColor.replaceAll('#', '');
     if (hexColor.length == 6) {
@@ -41,7 +40,6 @@ class Livre {
       auteur: json['auteur'] ?? '',
       genre: json['genre'] ?? '',
       annee: json['annee'] ?? 2000,
-      // Gère le cas où la note est un int ou un double
       note: (json['note'] as num?)?.toDouble() ?? 0.0,
       couleur: parsedColor,
       nouveaute: json['nouveaute'] ?? false,

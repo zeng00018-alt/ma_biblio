@@ -1,16 +1,18 @@
-# ma_biblio
+# MaBiblio
 
-A new Flutter project.
+Application Flutter de catalogue de livres réalisée dans le cadre du TP « Listes et grilles ».
 
-## Getting Started
+## Fonctionnalités
+- Catalogue en liste (`ListView`, `Card`, `ListTile`)
+- Galerie en grille responsive (`GridView.builder`)
+- Filtres par genre et livres lus (`CheckboxListTile`)
+- Données chargées et sauvegardées en JSON local (`path_provider`)
 
-This project is a starting point for a Flutter application.
+## Captures d'écran
+![Catalogue](captures/catalogue.png)
+![Galerie](captures/galerie.png)
 
-A few resources to get you started if this is your first Flutter project:
-
-- [Lab: Write your first Flutter app](https://docs.flutter.dev/get-started/codelab)
-- [Cookbook: Useful Flutter samples](https://docs.flutter.dev/cookbook)
-
-For help getting started with Flutter development, view the
-[online documentation](https://docs.flutter.dev/), which offers tutorials,
-samples, guidance on mobile development, and a full API reference.
+## Lancer le projet
+```bash
+flutter pub get
+flutter run
